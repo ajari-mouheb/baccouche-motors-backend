@@ -11,7 +11,7 @@ describe('ContactsController', () => {
       providers: [
         {
           provide: ContactsService,
-          useValue: { getStats: jest.fn().mockResolvedValue({ total: 0 }) },
+          useValue: { getStats: jest.fn().mockResolvedValue({ unread: 0 }) },
         },
       ],
     }).compile();
@@ -22,7 +22,7 @@ describe('ContactsController', () => {
   describe('getStats', () => {
     it('should return stats from service', async () => {
       const result = await contactsController.getStats();
-      expect(result).toEqual({ total: 0 });
+      expect(result).toEqual({ unread: 0 });
     });
   });
 });
