@@ -16,19 +16,44 @@ services:
       timeout: 5s
       retries: 5
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
+  kafka:
+    image: apache/kafka:3.8.0
+    container_name: kafka
     ports:
-      - '5672:5672'
-      - '15672:15672'
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      - '9092:9092'
     healthcheck:
-      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      test: ['CMD-SHELL', '/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1']
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 5
+      start_period: 30s
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+  kafka-init:
+    image: apache/kafka:3.8.0
+    environment:
+      KAFKA_BROKERS: kafka:9092
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Kafka..."
+        sleep 15
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic admin.getDashboard.reply --partitions 1 --replication-factor 1 2>/dev/null || true
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic baccouche.events --partitions 1 --replication-factor 1 2>/dev/null || true
+        echo "Kafka topics ready"
+    depends_on:
+      kafka:
+        condition: service_healthy
 
   gateway:
     build:
@@ -36,19 +61,22 @@ services:
       dockerfile: Dockerfile
       target: gateway
     ports:
-      - '3000:3000'
+      - '8080:3000'
     environment:
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
     depends_on:
       postgres:
         condition: service_healthy
-      rabbitmq:
+      kafka:
         condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
     volumes:
       - uploads_data:/app/uploads
+    restart: on-failure
 
   auth:
     build:
@@ -62,13 +90,14 @@ services:
       DB_PASSWORD: postgres
       DB_NAME: baccouche_auth
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
     depends_on:
       postgres:
         condition: service_healthy
-      rabbitmq:
+      kafka:
         condition: service_healthy
+    restart: on-failure
 
   cars:
     build:
@@ -81,14 +110,15 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: baccouche_cars
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
     depends_on:
       postgres:
         condition: service_healthy
-      rabbitmq:
+      kafka:
         condition: service_healthy
     volumes:
       - uploads_data:/app/uploads
+    restart: on-failure
 
   news:
     build:
@@ -101,14 +131,15 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: baccouche_news
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
     depends_on:
       postgres:
         condition: service_healthy
-      rabbitmq:
+      kafka:
         condition: service_healthy
     volumes:
       - uploads_data:/app/uploads
+    restart: on-failure
 
   test-drives:
     build:
@@ -121,12 +152,13 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: baccouche_test_drives
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
     depends_on:
       postgres:
         condition: service_healthy
-      rabbitmq:
+      kafka:
         condition: service_healthy
+    restart: on-failure
 
   contacts:
     build:
@@ -139,12 +171,13 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       DB_NAME: baccouche_contacts
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
     depends_on:
       postgres:
         condition: service_healthy
-      rabbitmq:
+      kafka:
         condition: service_healthy
+    restart: on-failure
 
   admin:
     build:
@@ -152,10 +185,11 @@ services:
       dockerfile: Dockerfile
       target: admin
     environment:
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
     depends_on:
-      rabbitmq:
+      kafka:
         condition: service_healthy
+    restart: on-failure
 
   notifications:
     build:
@@ -163,15 +197,16 @@ services:
       dockerfile: Dockerfile
       target: notifications
     environment:
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      KAFKA_BROKERS: kafka:9092
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-noreply@baccouche-motors.com}
     depends_on:
-      rabbitmq:
+      kafka:
         condition: service_healthy
+    restart: on-failure
 
 volumes:
   postgres_data:

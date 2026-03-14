@@ -7,3 +7,5 @@ export * from './patterns';
 export * from './decorators/roles.decorator';
 export * from './guards/gateway-auth.guard';
 export * from './guards/gateway-roles.guard';
+export * from './filters/http-to-rpc.exception-filter';
+export * from './dto';

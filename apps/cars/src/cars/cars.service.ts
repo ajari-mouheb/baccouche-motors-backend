@@ -1,12 +1,9 @@
-import { Inject, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Car } from '../entities/car.entity';
-import { CreateCarDto } from '../dto/create-car.dto';
-import { UpdateCarDto } from '../dto/update-car.dto';
-import { CarsQueryDto } from '../dto/cars-query.dto';
-import { PaginatedResponseDto } from '../dto/paginated-response.dto';
+import { CreateCarDto, UpdateCarDto, CarsQueryDto, PaginatedResponseDto } from '@app/shared';
 import { EVENT_PATTERNS } from '@app/shared';
 
 function slugify(text: string): string {
@@ -19,16 +16,12 @@ function slugify(text: string): string {
 }
 
 @Injectable()
-export class CarsService implements OnModuleInit {
+export class CarsService {
   constructor(
     @InjectRepository(Car)
     private readonly carRepository: Repository<Car>,
-    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientKafka,
+    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientProxy,
   ) {}
-
-  async onModuleInit() {
-    await this.eventsClient.connect();
-  }
 
   async createCar(carData: CreateCarDto) {
     const slug =

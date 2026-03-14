@@ -1,22 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotificationsController } from './notifications.controller';
-import { NotificationsService } from './notifications.service';
+import { EventsHandler } from './notifications/events.handler';
+import { EmailService } from './email/email.service';
 
-describe('NotificationsController', () => {
-  let notificationsController: NotificationsController;
+describe('EventsHandler', () => {
+  let eventsHandler: EventsHandler;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [NotificationsController],
-      providers: [NotificationsService],
+      controllers: [EventsHandler],
+      providers: [
+        {
+          provide: EmailService,
+          useValue: { send: jest.fn().mockResolvedValue(undefined) },
+        },
+      ],
     }).compile();
 
-    notificationsController = app.get<NotificationsController>(NotificationsController);
+    eventsHandler = app.get<EventsHandler>(EventsHandler);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(notificationsController.getHello()).toBe('Hello World!');
-    });
+  it('should be defined', () => {
+    expect(eventsHandler).toBeDefined();
   });
 });

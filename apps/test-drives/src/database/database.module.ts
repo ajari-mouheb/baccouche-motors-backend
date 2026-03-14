@@ -17,6 +17,7 @@ import { TestDrive } from '../entities/test-drive.entity';
         database: config.get('DB_NAME', 'baccouche_test_drives'),
         entities: [TestDrive],
         synchronize: config.get('NODE_ENV') !== 'production',
+        extra: { max: 1 },
       }),
       inject: [ConfigService],
     }),

@@ -4,17 +4,13 @@ import {
   Inject,
   Injectable,
   NotFoundException,
-  OnModuleInit,
 } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 import { TestDrive } from '../entities/test-drive.entity';
-import { CreateTestDriveDto } from '../dto/create-test-drive.dto';
-import { CreateTestDriveGuestDto } from '../dto/create-test-drive-guest.dto';
-import { UpdateTestDriveStatusDto } from '../dto/update-test-drive.dto';
-import { PaginatedResponseDto } from '../dto/paginated-response.dto';
+import { CreateTestDriveDto, CreateTestDriveGuestDto, UpdateTestDriveStatusDto, PaginatedResponseDto } from '@app/shared';
 import {
   EVENT_PATTERNS,
   PATTERNS,
@@ -31,19 +27,13 @@ interface GatewayUser {
 }
 
 @Injectable()
-export class TestDrivesService implements OnModuleInit {
+export class TestDrivesService {
   constructor(
     @InjectRepository(TestDrive)
     private readonly testDriveRepository: Repository<TestDrive>,
-    @Inject('CARS_SERVICE') private readonly carsClient: ClientKafka,
-    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientKafka,
+    @Inject('CARS_SERVICE') private readonly carsClient: ClientProxy,
+    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientProxy,
   ) {}
-
-  async onModuleInit() {
-    this.carsClient.subscribeToResponseOf(PATTERNS.CARS_FIND_BY_ID);
-    await this.carsClient.connect();
-    await this.eventsClient.connect();
-  }
 
   private async getCarById(carId: string): Promise<{ id: string; model: string; status: string } | null> {
     try {

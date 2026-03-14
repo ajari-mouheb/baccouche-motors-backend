@@ -1,9 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CreateCarDto } from '../dto/create-car.dto';
-import { UpdateCarDto } from '../dto/update-car.dto';
-import { CarsQueryDto } from '../dto/cars-query.dto';
-import { PaginatedResponseDto } from '../dto/paginated-response.dto';
+import { CreateCarDto, UpdateCarDto, CarsQueryDto, PaginatedResponseDto } from '@app/shared';
 import { CarsService } from './cars.service';
 import { PATTERNS } from '@app/shared';
 

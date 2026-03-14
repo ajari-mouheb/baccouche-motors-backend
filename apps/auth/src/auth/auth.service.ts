@@ -1,38 +1,25 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  OnModuleInit,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
-import { AuthRegisterDto } from '../dto/auth-register.dto';
-import { ForgotPasswordDto } from '../dto/forgot-password.dto';
-import { LoginUserDto } from '../dto/login.dto';
-import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { AuthRegisterDto, ForgotPasswordDto, LoginUserDto, ResetPasswordDto } from '@app/shared';
 import { PasswordResetToken } from '../entities/password-reset-token.entity';
 import { UserRole } from '@app/shared';
 import { UserService } from '../user/user.service';
 import { EVENT_PATTERNS } from '@app/shared';
 
 @Injectable()
-export class AuthService implements OnModuleInit {
+export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientKafka,
+    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientProxy,
     @InjectRepository(PasswordResetToken)
     private readonly resetTokenRepository: Repository<PasswordResetToken>,
   ) {}
-
-  async onModuleInit() {
-    await this.eventsClient.connect();
-  }
 
   async register(dto: AuthRegisterDto) {
     return this.userService.register({
@@ -74,7 +61,7 @@ export class AuthService implements OnModuleInit {
       expiresAt,
     });
 
-    const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const appUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
     const resetLink = `${appUrl}/reset-password?token=${token}`;
 
     this.eventsClient.emit(EVENT_PATTERNS.AUTH_FORGOT_PASSWORD_REQUESTED, {

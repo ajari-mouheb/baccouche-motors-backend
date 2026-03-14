@@ -17,6 +17,7 @@ import { Car } from '../entities/car.entity';
         database: config.get('DB_NAME', 'baccouche_cars'),
         entities: [Car],
         synchronize: config.get('NODE_ENV') !== 'production',
+        extra: { max: 1 },
       }),
       inject: [ConfigService],
     }),

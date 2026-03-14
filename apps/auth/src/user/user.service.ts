@@ -10,8 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { UserRole } from '@app/shared';
 import { User } from '../entities/user.entity';
-import { LoginUserDto } from '../dto/login.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { LoginUserDto, UpdateUserDto } from '@app/shared';
 
 export interface RegisterDto {
   email: string;

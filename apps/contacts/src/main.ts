@@ -2,21 +2,17 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { ContactsModule } from './contacts.module';
+import { QUEUES, HttpToRpcExceptionFilter } from '@app/shared';
+
+const rmqUrl = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(ContactsModule, {
-    transport: Transport.KAFKA,
+    transport: Transport.RMQ,
     options: {
-      client: {
-        clientId: 'contacts',
-        brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
-      },
-      consumer: {
-        groupId: 'contacts-consumer',
-      },
-      subscribe: {
-        fromBeginning: true,
-      },
+      urls: [rmqUrl],
+      queue: QUEUES.CONTACTS,
+      queueOptions: { durable: true },
     },
   });
 
@@ -27,6 +23,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalFilters(new HttpToRpcExceptionFilter());
 
   await app.listen();
 }

@@ -1,24 +1,18 @@
-import { Inject, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Contact } from '../entities/contact.entity';
-import { CreateContactDto } from '../dto/create-contact.dto';
-import { UpdateContactDto } from '../dto/update-contact.dto';
-import { PaginatedResponseDto } from '../dto/paginated-response.dto';
+import { CreateContactDto, UpdateContactDto, PaginatedResponseDto } from '@app/shared';
 import { EVENT_PATTERNS } from '@app/shared';
 
 @Injectable()
-export class ContactsService implements OnModuleInit {
+export class ContactsService {
   constructor(
     @InjectRepository(Contact)
     private readonly contactRepository: Repository<Contact>,
-    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientKafka,
+    @Inject('EVENTS_CLIENT') private readonly eventsClient: ClientProxy,
   ) {}
-
-  async onModuleInit() {
-    await this.eventsClient.connect();
-  }
 
   async create(dto: CreateContactDto): Promise<Contact> {
     const contact = this.contactRepository.create({

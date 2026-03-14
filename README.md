@@ -25,11 +25,38 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Requirements
+
+- **Node.js 20** LTS (recommended; avoids KafkaJS TimeoutNegativeWarning with Node 24). Use `nvm use 20` or `n 20` if you have nvm/n.
+
 ## Project setup
 
 ```bash
 $ npm install
 ```
+
+## Local development (without Docker Compose)
+
+Run infrastructure only (Postgres + RabbitMQ), then start Nest apps locally:
+
+```bash
+# 1. Copy env and start infra (Postgres + RabbitMQ)
+cp .env.example .env
+npm run infra:up
+
+# 2. Seed the database (creates admin, staff, customer users + sample data)
+npm run seed
+
+# 3. Start all services (or run individually)
+npm run start:dev         # All 8 services (gateway on http://localhost:4000)
+
+# Stop infra when done
+npm run infra:down
+```
+
+**Seed users** (after infra is up): `npm run seed` — creates admin (`admin@baccouche-motors.com` / `Admin123!`), staff, customer, and sample cars/news/contacts.
+
+**Debug mode** (Node inspector): `npm run debug:gateway` or `npm run debug:auth`
 
 ## Compile and run the project
 

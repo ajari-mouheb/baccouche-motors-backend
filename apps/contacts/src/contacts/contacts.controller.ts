@@ -2,8 +2,7 @@ import {
   Controller,
 } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CreateContactDto } from '../dto/create-contact.dto';
-import { UpdateContactDto } from '../dto/update-contact.dto';
+import { CreateContactDto, UpdateContactDto } from '@app/shared';
 import { ContactsService } from './contacts.service';
 import { PATTERNS } from '@app/shared';
 

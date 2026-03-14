@@ -1,0 +1,1648 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "HealthController_healthRoot",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          }
+        },
+        "summary": "Health check (root)",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api": {
+      "get": {
+        "operationId": "HealthController_healthApi",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy"
+          }
+        },
+        "summary": "Health check (api)",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          }
+        },
+        "summary": "Register a new customer",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns access token and user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Login and get JWT",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Logout (invalidates token)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Current user data"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "If email exists, reset link sent"
+          }
+        },
+        "summary": "Request password reset (emits event → Notifications sends email)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          }
+        },
+        "summary": "Reset password with token from email",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/customers/me": {
+      "get": {
+        "operationId": "CustomersController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Current user details"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile",
+        "tags": [
+          "Customers"
+        ]
+      },
+      "patch": {
+        "operationId": "CustomersController_updateMe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update current user profile",
+        "tags": [
+          "Customers"
+        ]
+      }
+    },
+    "/api/customers/me/password": {
+      "patch": {
+        "operationId": "CustomersController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change password",
+        "tags": [
+          "Customers"
+        ]
+      }
+    },
+    "/api/cars": {
+      "get": {
+        "operationId": "CarsController_getAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "make",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "yearMin",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "yearMax",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "priceMin",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "priceMax",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "slug",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of cars"
+          }
+        },
+        "summary": "List cars (paginated, with filters)",
+        "tags": [
+          "Cars"
+        ]
+      },
+      "post": {
+        "operationId": "CarsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCarDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Car created"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create car (emits car.created event)",
+        "tags": [
+          "Cars"
+        ]
+      }
+    },
+    "/api/cars/stats": {
+      "get": {
+        "operationId": "CarsController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Cars stats (total, by status, etc.)"
+          }
+        },
+        "summary": "Get cars statistics",
+        "tags": [
+          "Cars"
+        ]
+      }
+    },
+    "/api/cars/slug/{slug}": {
+      "get": {
+        "operationId": "CarsController_getBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Car details"
+          }
+        },
+        "summary": "Get car by slug",
+        "tags": [
+          "Cars"
+        ]
+      }
+    },
+    "/api/cars/{id}": {
+      "get": {
+        "operationId": "CarsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Car details"
+          }
+        },
+        "summary": "Get car by ID",
+        "tags": [
+          "Cars"
+        ]
+      },
+      "put": {
+        "operationId": "CarsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCarDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Car updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update car (emits car.updated event)",
+        "tags": [
+          "Cars"
+        ]
+      },
+      "delete": {
+        "operationId": "CarsController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Car deleted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete car (emits car.deleted event)",
+        "tags": [
+          "Cars"
+        ]
+      }
+    },
+    "/api/cars/{id}/image": {
+      "post": {
+        "operationId": "CarsController_uploadImage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image uploaded"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload car image",
+        "tags": [
+          "Cars"
+        ]
+      }
+    },
+    "/api/news": {
+      "get": {
+        "operationId": "NewsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of news"
+          }
+        },
+        "summary": "List news (paginated)",
+        "tags": [
+          "News"
+        ]
+      },
+      "post": {
+        "operationId": "NewsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNewsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "News created"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create news (emits news.created event)",
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/news/stats": {
+      "get": {
+        "operationId": "NewsController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "News stats"
+          }
+        },
+        "summary": "Get news statistics",
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/news/slug/{slug}": {
+      "get": {
+        "operationId": "NewsController_getBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "News details"
+          }
+        },
+        "summary": "Get news by slug",
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/news/{id}": {
+      "get": {
+        "operationId": "NewsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "News details"
+          }
+        },
+        "summary": "Get news by ID",
+        "tags": [
+          "News"
+        ]
+      },
+      "put": {
+        "operationId": "NewsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNewsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "News updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update news (emits news.updated event)",
+        "tags": [
+          "News"
+        ]
+      },
+      "delete": {
+        "operationId": "NewsController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "News deleted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete news (emits news.deleted event)",
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/news/{id}/image": {
+      "post": {
+        "operationId": "NewsController_uploadImage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image uploaded"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload news image",
+        "tags": [
+          "News"
+        ]
+      }
+    },
+    "/api/test-drives": {
+      "post": {
+        "description": "Logged-in: send carId, scheduledAt, notes. Guest: send name, phone, email, model, preferredDate, timeSlot.",
+        "operationId": "TestDrivesController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Test drive scheduled"
+          }
+        },
+        "summary": "Schedule test drive (emits test-drive.created event)",
+        "tags": [
+          "Test Drives"
+        ]
+      },
+      "get": {
+        "operationId": "TestDrivesController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of test drives"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List test drives",
+        "tags": [
+          "Test Drives"
+        ]
+      }
+    },
+    "/api/test-drives/stats": {
+      "get": {
+        "operationId": "TestDrivesController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Test drive stats"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get test drive statistics",
+        "tags": [
+          "Test Drives"
+        ]
+      }
+    },
+    "/api/test-drives/{id}": {
+      "get": {
+        "operationId": "TestDrivesController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test drive details"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get test drive by ID",
+        "tags": [
+          "Test Drives"
+        ]
+      },
+      "patch": {
+        "operationId": "TestDrivesController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestDriveStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update test drive status (emits test-drive.status-changed event)",
+        "tags": [
+          "Test Drives"
+        ]
+      },
+      "delete": {
+        "operationId": "TestDrivesController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test drive cancelled"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancel test drive",
+        "tags": [
+          "Test Drives"
+        ]
+      }
+    },
+    "/api/contacts": {
+      "post": {
+        "operationId": "ContactsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContactDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contact created"
+          }
+        },
+        "summary": "Create contact (emits contact.created event)",
+        "tags": [
+          "Contacts"
+        ]
+      },
+      "get": {
+        "operationId": "ContactsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of contacts"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List contacts (paginated)",
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/api/contacts/stats": {
+      "get": {
+        "operationId": "ContactsController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Contact stats"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get contact statistics",
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/api/contacts/{id}": {
+      "get": {
+        "operationId": "ContactsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact details"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get contact by ID",
+        "tags": [
+          "Contacts"
+        ]
+      },
+      "patch": {
+        "operationId": "ContactsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContactDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update contact (emits contact.updated event)",
+        "tags": [
+          "Contacts"
+        ]
+      },
+      "delete": {
+        "operationId": "ContactsController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact deleted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete contact",
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/api/admin/dashboard": {
+      "get": {
+        "operationId": "AdminController_getDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dashboard stats (cars, news, test drives, contacts)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get admin dashboard (aggregates event-driven stats)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Baccouche Motors API Gateway",
+    "description": "API Gateway for Baccouche Motors microservices.\n\n## Event-Driven Design (RabbitMQ)\nThis system follows a strict **Event-Driven Design** pattern:\n- **Domain events** are emitted on create/update/delete operations\n- **Consumers** react asynchronously (emails, stats, audit)\n\n| Event | Producer | Consumers |\n|-------|----------|-----------|\n| `auth.forgot-password-requested` | Auth | Notifications (email) |\n| `car.created` / `updated` / `deleted` | Cars | Admin (stats) |\n| `news.created` / `updated` / `deleted` | News | Admin (stats) |\n| `contact.created` / `updated` | Contacts | Notifications, Admin |\n| `test-drive.created` / `status-changed` | Test Drives | Notifications, Admin |\n\n**Flow**: Gateway → RabbitMQ RPC (sync) → Microservice → emits to `baccouche.events` exchange → Consumers (Notifications, Admin)",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "AuthRegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "firstName",
+          "lastName",
+          "phone"
+        ]
+      },
+      "LoginUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "user": {
+            "type": "object",
+            "description": "User object"
+          },
+          "auth_token": {
+            "type": "string",
+            "description": "JWT access token"
+          }
+        },
+        "required": [
+          "success",
+          "user",
+          "auth_token"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Reset token from email"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "Current password"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "CreateCarDto": {
+        "type": "object",
+        "properties": {
+          "make": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "year": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "specs": {
+            "type": "object"
+          },
+          "vin": {
+            "type": "string"
+          },
+          "mileage": {
+            "type": "number"
+          },
+          "color": {
+            "type": "string"
+          },
+          "fuelType": {
+            "type": "string"
+          },
+          "transmission": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "make",
+          "model",
+          "year",
+          "price"
+        ]
+      },
+      "UpdateCarDto": {
+        "type": "object",
+        "properties": {
+          "make": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "year": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "specs": {
+            "type": "object"
+          },
+          "vin": {
+            "type": "string"
+          },
+          "mileage": {
+            "type": "number"
+          },
+          "color": {
+            "type": "string"
+          },
+          "fuelType": {
+            "type": "string"
+          },
+          "transmission": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateNewsDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "example": "2025-01-15"
+          },
+          "image": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "excerpt",
+          "content",
+          "date"
+        ]
+      },
+      "UpdateNewsDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          }
+        }
+      },
+      "UpdateTestDriveStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "confirmed",
+              "completed",
+              "cancelled",
+              "rejected"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CreateContactDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "subject",
+          "message"
+        ]
+      },
+      "UpdateContactDto": {
+        "type": "object",
+        "properties": {
+          "read": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PaginatedResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Array of items",
+            "type": "array",
+            "items": {
+              "type": "array"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total count of items"
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Items per page"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total pages"
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "CarsQueryDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "default": 1
+          },
+          "limit": {
+            "type": "number",
+            "default": 10
+          },
+          "make": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "yearMin": {
+            "type": "number"
+          },
+          "yearMax": {
+            "type": "number"
+          },
+          "priceMin": {
+            "type": "number"
+          },
+          "priceMax": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateTestDriveDto": {
+        "type": "object",
+        "properties": {
+          "carId": {
+            "type": "string",
+            "description": "Car UUID"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "example": "2025-03-20T10:00:00.000Z"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "carId",
+          "scheduledAt"
+        ]
+      },
+      "CreateTestDriveGuestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "example": "guest@example.com"
+          },
+          "model": {
+            "type": "string",
+            "description": "Car model name"
+          },
+          "preferredDate": {
+            "type": "string",
+            "example": "2025-03-20"
+          },
+          "timeSlot": {
+            "type": "string",
+            "enum": [
+              "morning",
+              "afternoon"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "email",
+          "model",
+          "preferredDate",
+          "timeSlot"
+        ]
+      },
+      "PaginationDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "default": 1
+          },
+          "limit": {
+            "type": "number",
+            "default": 10
+          }
+        }
+      }
+    }
+  }
+}

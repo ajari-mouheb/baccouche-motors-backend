@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CarsController } from './cars.controller';
-import { CarsService } from './cars.service';
+import { CarsController } from './cars/cars.controller';
+import { CarsService } from './cars/cars.service';
 
 describe('CarsController', () => {
   let carsController: CarsController;
@@ -8,15 +8,21 @@ describe('CarsController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [CarsController],
-      providers: [CarsService],
+      providers: [
+        {
+          provide: CarsService,
+          useValue: { getStats: jest.fn().mockResolvedValue({ total: 0 }) },
+        },
+      ],
     }).compile();
 
     carsController = app.get<CarsController>(CarsController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(carsController.getHello()).toBe('Hello World!');
+  describe('getStats', () => {
+    it('should return stats from service', async () => {
+      const result = await carsController.getStats();
+      expect(result).toEqual({ total: 0 });
     });
   });
 });

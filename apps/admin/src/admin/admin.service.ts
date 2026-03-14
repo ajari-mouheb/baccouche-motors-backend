@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { EVENT_PATTERNS, PATTERNS } from '@app/shared';
 
@@ -13,21 +13,13 @@ export class AdminService implements OnModuleInit {
   };
 
   constructor(
-    @Inject('CARS_SERVICE') private readonly carsClient: ClientKafka,
-    @Inject('NEWS_SERVICE') private readonly newsClient: ClientKafka,
-    @Inject('TEST_DRIVES_SERVICE') private readonly testDrivesClient: ClientKafka,
-    @Inject('CONTACTS_SERVICE') private readonly contactsClient: ClientKafka,
+    @Inject('CARS_SERVICE') private readonly carsClient: ClientProxy,
+    @Inject('NEWS_SERVICE') private readonly newsClient: ClientProxy,
+    @Inject('TEST_DRIVES_SERVICE') private readonly testDrivesClient: ClientProxy,
+    @Inject('CONTACTS_SERVICE') private readonly contactsClient: ClientProxy,
   ) {}
 
   async onModuleInit() {
-    this.carsClient.subscribeToResponseOf(PATTERNS.CARS_GET_STATS);
-    this.newsClient.subscribeToResponseOf(PATTERNS.NEWS_GET_STATS);
-    this.testDrivesClient.subscribeToResponseOf(PATTERNS.TEST_DRIVES_GET_STATS);
-    this.contactsClient.subscribeToResponseOf(PATTERNS.CONTACTS_GET_STATS);
-    await this.carsClient.connect();
-    await this.newsClient.connect();
-    await this.testDrivesClient.connect();
-    await this.contactsClient.connect();
     await this.syncStats();
   }
 

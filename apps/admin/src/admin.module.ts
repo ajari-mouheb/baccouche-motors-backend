@@ -4,8 +4,9 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AdminController } from './admin/admin.controller';
 import { AdminEventsHandler } from './admin/admin.events-handler';
 import { AdminService } from './admin/admin.service';
+import { QUEUES } from '@app/shared';
 
-const kafkaBrokers = (process.env.KAFKA_BROKERS || 'localhost:9092').split(',');
+const rmqUrl = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 
 @Module({
   imports: [
@@ -13,34 +14,38 @@ const kafkaBrokers = (process.env.KAFKA_BROKERS || 'localhost:9092').split(',');
     ClientsModule.register([
       {
         name: 'CARS_SERVICE',
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: { clientId: 'admin-cars', brokers: kafkaBrokers },
-          consumer: { groupId: 'admin-cars-consumer' },
+          urls: [rmqUrl],
+          queue: QUEUES.CARS,
+          queueOptions: { durable: true },
         },
       },
       {
         name: 'NEWS_SERVICE',
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: { clientId: 'admin-news', brokers: kafkaBrokers },
-          consumer: { groupId: 'admin-news-consumer' },
+          urls: [rmqUrl],
+          queue: QUEUES.NEWS,
+          queueOptions: { durable: true },
         },
       },
       {
         name: 'TEST_DRIVES_SERVICE',
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: { clientId: 'admin-test-drives', brokers: kafkaBrokers },
-          consumer: { groupId: 'admin-test-drives-consumer' },
+          urls: [rmqUrl],
+          queue: QUEUES.TEST_DRIVES,
+          queueOptions: { durable: true },
         },
       },
       {
         name: 'CONTACTS_SERVICE',
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: { clientId: 'admin-contacts', brokers: kafkaBrokers },
-          consumer: { groupId: 'admin-contacts-consumer' },
+          urls: [rmqUrl],
+          queue: QUEUES.CONTACTS,
+          queueOptions: { durable: true },
         },
       },
     ]),

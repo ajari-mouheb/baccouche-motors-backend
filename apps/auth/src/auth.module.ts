@@ -7,6 +7,9 @@ import { CustomersController } from './customers/customers.controller';
 import { UserService } from './user/user.service';
 import { DatabaseModule } from './database/database.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { EXCHANGE } from '@app/shared';
+
+const rmqUrl = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 
 @Module({
   imports: [
@@ -15,13 +18,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ClientsModule.register([
       {
         name: 'EVENTS_CLIENT',
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: {
-            clientId: 'auth-events',
-            brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
-          },
-          producerOnlyMode: true,
+          urls: [rmqUrl],
+          queue: EXCHANGE,
+          exchange: EXCHANGE,
+          exchangeType: 'topic',
+          queueOptions: { durable: true },
         },
       },
     ]),

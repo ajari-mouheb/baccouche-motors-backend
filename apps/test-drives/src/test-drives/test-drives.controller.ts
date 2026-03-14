@@ -5,9 +5,7 @@ import {
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { CreateTestDriveDto } from '../dto/create-test-drive.dto';
-import { CreateTestDriveGuestDto } from '../dto/create-test-drive-guest.dto';
-import { UpdateTestDriveStatusDto } from '../dto/update-test-drive.dto';
+import { CreateTestDriveDto, CreateTestDriveGuestDto, UpdateTestDriveStatusDto } from '@app/shared';
 import { TestDrivesService } from './test-drives.service';
 import { PATTERNS } from '@app/shared';
 

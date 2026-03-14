@@ -17,6 +17,7 @@ import { Contact } from '../entities/contact.entity';
         database: config.get('DB_NAME', 'baccouche_contacts'),
         entities: [Contact],
         synchronize: config.get('NODE_ENV') !== 'production',
+        extra: { max: 1 },
       }),
       inject: [ConfigService],
     }),

@@ -17,6 +17,7 @@ import { News } from '../entities/news.entity';
         database: config.get('DB_NAME', 'baccouche_news'),
         entities: [News],
         synchronize: config.get('NODE_ENV') !== 'production',
+        extra: { max: 1 },
       }),
       inject: [ConfigService],
     }),

@@ -18,6 +18,7 @@ import { PasswordResetToken } from '../entities/password-reset-token.entity';
         database: config.get('DB_NAME', 'baccouche_auth'),
         entities: [User, PasswordResetToken],
         synchronize: config.get('NODE_ENV') !== 'production',
+        extra: { max: 1 },
       }),
       inject: [ConfigService],
     }),

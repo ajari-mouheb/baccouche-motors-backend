@@ -12,13 +12,13 @@ import { DatabaseModule } from './database/database.module';
     ClientsModule.register([
       {
         name: 'EVENTS_CLIENT',
-        transport: Transport.KAFKA,
+        transport: Transport.RMQ,
         options: {
-          client: {
-            clientId: 'news-events',
-            brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
-          },
-          producerOnlyMode: true,
+          urls: [process.env.RABBITMQ_URL || 'amqp://localhost:5672'],
+          queue: 'baccouche.events',
+          exchange: 'baccouche.events',
+          exchangeType: 'topic',
+          queueOptions: { durable: true },
         },
       },
     ]),

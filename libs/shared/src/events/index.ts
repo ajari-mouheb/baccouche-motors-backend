@@ -1,6 +1,6 @@
 export const EXCHANGE = 'baccouche.events';
 
-/** @deprecated Use EVENT_PATTERNS for Kafka */
+/** @deprecated Use EVENT_PATTERNS */
 export const ROUTING_KEYS = {
   AUTH_FORGOT_PASSWORD: 'auth.forgot-password-requested',
   TEST_DRIVE_CREATED: 'test-drive.created',
@@ -15,7 +15,7 @@ export const ROUTING_KEYS = {
   NEWS_DELETED: 'news.deleted',
 } as const;
 
-/** Event patterns for @EventPattern (fire-and-forget to baccouche.events topic) */
+/** Event patterns for @EventPattern (fire-and-forget to baccouche.events exchange) */
 export const EVENT_PATTERNS = {
   AUTH_FORGOT_PASSWORD_REQUESTED: 'auth.forgot-password-requested',
   TEST_DRIVE_CREATED: 'test-drive.created',
@@ -28,17 +28,6 @@ export const EVENT_PATTERNS = {
   NEWS_CREATED: 'news.created',
   NEWS_UPDATED: 'news.updated',
   NEWS_DELETED: 'news.deleted',
-} as const;
-
-/** Kafka topic names */
-export const KAFKA_TOPICS = {
-  AUTH: 'auth',
-  CARS: 'cars',
-  NEWS: 'news',
-  TEST_DRIVES: 'test-drives',
-  CONTACTS: 'contacts',
-  ADMIN: 'admin',
-  EVENTS: 'baccouche.events',
 } as const;
 
 export interface ForgotPasswordEvent {

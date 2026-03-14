@@ -1,7 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { ChangePasswordDto } from '../dto/change-password.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { ChangePasswordDto, UpdateUserDto } from '@app/shared';
 import { UserService } from '../user/user.service';
 import { PATTERNS } from '@app/shared';
 

@@ -1,9 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { AuthRegisterDto } from '../dto/auth-register.dto';
-import { ForgotPasswordDto } from '../dto/forgot-password.dto';
-import { LoginUserDto } from '../dto/login.dto';
-import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { AuthRegisterDto, ForgotPasswordDto, LoginUserDto, ResetPasswordDto } from '@app/shared';
 import { AuthService } from './auth.service';
 import { PATTERNS } from '@app/shared';
 

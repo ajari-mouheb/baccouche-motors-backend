@@ -1,21 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { NotificationsModule } from './notifications.module';
+import { QUEUES, EXCHANGE } from '@app/shared';
+
+const rmqUrl = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(NotificationsModule, {
-    transport: Transport.KAFKA,
+    transport: Transport.RMQ,
     options: {
-      client: {
-        clientId: 'notifications',
-        brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
-      },
-      consumer: {
-        groupId: 'notifications-consumer',
-      },
-      subscribe: {
-        fromBeginning: true,
-      },
+      urls: [rmqUrl],
+      queue: QUEUES.NOTIFICATIONS,
+      queueOptions: { durable: true },
+      exchange: EXCHANGE,
+      exchangeType: 'topic',
+      wildcards: true,
     },
   });
 
