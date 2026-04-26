@@ -32,11 +32,19 @@ export class EmailService {
   async send(options: SendMailOptions): Promise<boolean> {
     if (!this.transporter) {
       // No SMTP configured - log and skip (useful for dev)
-      console.warn('[EmailService] SMTP not configured, skipping email:', options.subject, '->', options.to);
+      console.warn(
+        '[EmailService] SMTP not configured, skipping email:',
+        options.subject,
+        '->',
+        options.to,
+      );
       return false;
     }
 
-    const from = this.configService.get<string>('SMTP_FROM', 'noreply@baccouche-motors.com');
+    const from = this.configService.get<string>(
+      'SMTP_FROM',
+      'noreply@baccouche-motors.com',
+    );
 
     try {
       await this.transporter.sendMail({
@@ -53,9 +61,17 @@ export class EmailService {
     }
   }
 
-  async sendPasswordResetEmail(email: string, resetLink: string): Promise<boolean> {
-    const appUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
-    const fullLink = resetLink.startsWith('http') ? resetLink : `${appUrl}/reset-password?token=${resetLink}`;
+  async sendPasswordResetEmail(
+    email: string,
+    resetLink: string,
+  ): Promise<boolean> {
+    const appUrl = this.configService.get<string>(
+      'FRONTEND_URL',
+      'http://localhost:3001',
+    );
+    const fullLink = resetLink.startsWith('http')
+      ? resetLink
+      : `${appUrl}/reset-password?token=${resetLink}`;
 
     return this.send({
       to: email,
@@ -81,7 +97,7 @@ export class EmailService {
   ): Promise<boolean> {
     return this.send({
       to: email,
-      subject: 'Demande d\'essai reçue - Baccouche Motors',
+      subject: "Demande d'essai reçue - Baccouche Motors",
       html: `
         <h2>Bonjour ${name},</h2>
         <p>Nous avons bien reçu votre demande d'essai pour le véhicule <strong>${model}</strong>.</p>
@@ -93,7 +109,11 @@ export class EmailService {
     });
   }
 
-  async sendContactConfirmationEmail(name: string, email: string, subject: string): Promise<boolean> {
+  async sendContactConfirmationEmail(
+    name: string,
+    email: string,
+    subject: string,
+  ): Promise<boolean> {
     return this.send({
       to: email,
       subject: 'Nous avons bien reçu votre message - Baccouche Motors',

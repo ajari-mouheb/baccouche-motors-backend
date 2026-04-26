@@ -1,0 +1,790 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+
+% Page setup
+\geometry{margin=2.5cm}
+
+% Colors
+\definecolor{darkblue}{RGB}{0,51,102}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkblue,
+    filecolor=darkblue,
+    urlcolor=darkblue,
+}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\large\bfseries}{\thesubsubsection}{1em}{}
+
+% Code listing style
+\lstset{
+    backgroundcolor=\color{lightgray!20},
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    basicstyle=\ttfamily\small,
+}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    
+    {\Huge\bfseries Baccouche Motors\par}
+    \vspace{1cm}
+    {\Large Comprehensive Application Review Report\par}
+    \vspace{2cm}
+    
+    \textbf{Project:} Full-Stack Car Dealership Application \\
+    \textbf{Type:} Microservices Backend + Next.js Frontend \\
+    \textbf{Date:} \today \\
+    
+    \vspace{3cm}
+    
+    \textit{Technical Review and Architecture Analysis}
+    
+\end{titlepage}
+
+% Table of Contents
+\newpage
+\tableofcontents
+\newpage
+
+% Sections
+\section{Project Overview}
+\label{sec:overview}
+
+This is a full-stack car dealership application consisting of two main parts:
+
+\begin{table}[h]
+\centering
+\caption{Application Components}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Component & Type & Description \\
+\midrule
+\textbf{Backend} & NestJS Microservices & REST API with API Gateway pattern \\
+\textbf{Frontend} & Next.js 16 App & React-based web application \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Technology Stack Summary}
+
+\subsubsection{Backend Stack}
+
+\begin{table}[h]
+\centering
+\caption{Backend Technology Stack}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Category & Technology \\
+\midrule
+Runtime & Node.js \\
+Framework & NestJS v11 \\
+Language & TypeScript v5.7 \\
+Database & PostgreSQL 16 \\
+ORM & TypeORM v0.3 \\
+Message Broker & RabbitMQ 3 \\
+Authentication & JWT + bcrypt \\
+API Documentation & Swagger/OpenAPI \\
+Testing & Jest v30 \\
+Container & Docker + Docker Compose \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Frontend Stack}
+
+\begin{table}[h]
+\centering
+\caption{Frontend Technology Stack}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Category & Technology \\
+\midrule
+Framework & Next.js 16.1.6 \\
+UI Library & React 19.2.3 \\
+Language & TypeScript 5.x \\
+Styling & Tailwind CSS v4 \\
+UI Components & shadcn/ui v4.1.2 \\
+State Management & TanStack React Query v5 \\
+Form Handling & React Hook Form v7 + Zod \\
+HTTP Client & Axios \\
+Rich Text Editor & TipTap v3 \\
+Charts & Recharts \\
+Testing & Cypress (E2E) + Vitest \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{Architecture}
+\label{sec:architecture}
+
+\subsection{Overall System Architecture}
+
+The application follows a microservices architecture with an API Gateway pattern.
+
+\bigskip
+\noindent\textbf{Diagram Description:}
+\begin{itemize}
+    \item \textbf{Frontend Layer}: Web Browser interacts with Next.js application
+    \item \textbf{API Gateway}: NestJS Gateway on port 3500 handles routing and authentication
+    \item \textbf{Message Broker}: RabbitMQ on port 5672 routes requests between services
+    \item \textbf{Microservices}: Auth, Cars, News, Test Drives, Contacts, and Admin services
+    \item \textbf{Database Layer}: PostgreSQL with polyglot persistence (separate databases per service)
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox{0.9\textwidth}{
+\textbf{High-Level Architecture Diagram}\\
+\begin{center}
+Web Browser $\rightarrow$ API Gateway (:3500) $\rightarrow$ RabbitMQ (:5672) $\rightarrow$ Microservices \\
+$\rightarrow$ PostgreSQL Databases
+\end{center}
+}}
+\end{figure}
+
+\subsection{Backend Microservices Architecture}
+
+\bigskip
+\noindent\textbf{Components:}
+\begin{itemize}
+    \item \textbf{Gateway}: Port 3500 - Entry point with rate limiting and auth
+    \item \textbf{Auth Service}: Port 3501 - User authentication
+    \item \textbf{Cars Service}: Port 3502 - Car inventory management
+    \item \textbf{News Service}: Port 3503 - News/Blog management
+    \item \textbf{Test Drives Service}: Port 3504 - Test drive scheduling
+    \item \textbf{Contacts Service}: Port 3505 - Contact form submissions
+    \item \textbf{Admin Service}: Port 3506 - Admin dashboard
+\end{itemize}
+
+\subsection{Frontend Architecture}
+
+\bigskip
+\noindent\textbf{Route Structure:}
+\begin{itemize}
+    \item \textbf{Public Routes}: /, /about, /cars, /cars/[slug], /contact, /test-drive, /services, /actualites
+    \item \textbf{Admin Routes (Protected)}: /admin/login, /admin/dashboard, /admin/cars, /admin/news, /admin/contacts, /admin/test-drives
+    \item \textbf{Customer Routes (Protected)}: /customer/login, /customer/register, /customer/dashboard, /customer/profile, /customer/test-drives
+\end{itemize}
+
+\newpage
+
+\section{Users \& Roles}
+\label{sec:users}
+
+\subsection{User Roles (from libs/shared/src/constants.ts)}
+
+\begin{table}[h]
+\centering
+\caption{User Roles}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Role & Description \\
+\midrule
+\textbf{ADMIN} & Full system access - can manage all entities, view dashboard, manage staff \\
+\textbf{STAFF} & Limited admin access - can manage cars, test drives, contacts (no user management) \\
+\textbf{CUSTOMER} & Public user - can register, login, book test drives, submit contacts, manage own profile \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{Use Cases by User Type}
+\label{sec:usecases}
+
+\subsection{Anonymous/Guest Users (No Authentication)}
+
+\begin{table}[h]
+\centering
+\caption{Guest User Use Cases}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Use Case & Endpoint & Description \\
+\midrule
+View Cars & GET /api/cars & Browse available cars \\
+View Car Details & GET /api/cars/:slug & View single car by slug \\
+View News & GET /api/news & Browse published news articles \\
+View News Details & GET /api/news/:slug & View single news by slug \\
+Contact & POST /api/contacts & Submit contact form (guest allowed) \\
+Health Check & GET / & API health status \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{CUSTOMER (Registered Users)}
+
+\begin{table}[h]
+\centering
+\caption{Customer Use Cases}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Use Case & Endpoint \\
+\midrule
+Register & POST /api/auth/register \\
+Login & POST /api/auth/login \\
+Forgot Password & POST /api/auth/forgot-password \\
+Reset Password & POST /api/auth/reset-password \\
+View Profile & GET /api/customers/me \\
+Update Profile & PATCH /api/customers/me \\
+Change Password & PATCH /api/customers/me/password \\
+Schedule Test Drive & POST /api/test-drives \\
+View My Test Drives & GET /api/test-drives \\
+Cancel Test Drive & DELETE /api/test-drives/:id \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{STAFF (Dealership Staff)}
+
+\begin{table}[h]
+\centering
+\caption{Staff Use Cases}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Use Case & Endpoint \\
+\midrule
+All CUSTOMER capabilities & Plus: \\
+Create Car & POST /api/cars \\
+Update Car & PUT /api/cars/:id \\
+Delete Car & DELETE /api/cars/:id \\
+Upload Car Image & POST /api/cars/:id/image \\
+Create News & POST /api/news \\
+Update News & PUT /api/news/:id \\
+Delete News & DELETE /api/news/:id \\
+View Test Drives & GET /api/test-drives \\
+Update Test Drive Status & PATCH /api/test-drives/:id \\
+View Contacts & GET /api/contacts \\
+Update Contact & PATCH /api/contacts/:id \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{ADMIN (System Administrator)}
+
+\begin{table}[h]
+\centering
+\caption{Admin Use Cases}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Use Case & Endpoint \\
+\midrule
+All STAFF capabilities & Plus: \\
+Admin Dashboard & GET /api/admin \\
+View All Users & (via auth service) \\
+Staff Management & Assign STAFF role \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{Frontend Analysis}
+\label{sec:frontend}
+
+\subsection{Frontend Project Structure}
+
+\begin{verbatim}
+baccouche-motors-frontend/
+├── app/                          # Next.js App Router
+│   ├── (public routes)
+│   │   ├── page.tsx              # Home page
+│   │   ├── about/page.tsx        # About page
+│   │   ├── cars/page.tsx         # Cars listing
+│   │   ├── cars/[slug]/page.tsx  # Car detail
+│   │   ├── contact/page.tsx       # Contact page
+│   │   ├── test-drive/page.tsx  # Test drive request
+│   │   ├── services/page.tsx     # Services page
+│   │   └── actualites/          # News (French)
+│   ├── admin/                   # Admin dashboard
+│   ├── customer/               # Customer portal
+│   ├── layout.tsx
+│   └── globals.css
+├── components/
+│   ├── ui/                    # shadcn/ui components
+│   ├── admin/                 # Admin components
+│   ├── customer/             # Customer components
+│   ├── cars/                  # Car components
+│   ├── home/                  # Homepage sections
+│   ├── forms/                 # Form components
+│   ├── layout/                # Layout components
+│   ├── auth/                  # Auth components
+│   └── shared/               # Shared components
+├── lib/
+│   ├── api/                   # API client & endpoints
+│   ├── hooks/                 # React Query hooks
+│   ├── auth-context.tsx       # Auth Context
+│   ├── types/                 # TypeScript interfaces
+│   └── utils.ts
+├── cypress/                    # E2E tests
+└── package.json
+\end{verbatim}
+
+\subsection{Frontend Routes}
+
+\subsubsection{Public Routes}
+
+\begin{table}[h]
+\centering
+\caption{Public Routes}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Route & Page \\
+\midrule
+/ & Home page \\
+/about & About page \\
+/cars & Cars listing \\
+/cars/[slug] & Car details \\
+/contact & Contact form \\
+/test-drive & Test drive request \\
+/services & Services page \\
+/actualites & News listing \\
+/actualites/[slug] & News article \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Frontend Components}
+
+\bigskip
+\noindent\textbf{UI Components (shadcn/ui):}
+\begin{itemize}
+    \item Button, Input, Card, Dialog, Form, Data Table, Rich Text Editor
+\end{itemize}
+
+\noindent\textbf{Feature Components:}
+\begin{itemize}
+    \item Car Card, Car Grid, Image Gallery, Test Drive Form, Contact Form, Stats Cards, Charts
+\end{itemize}
+
+\noindent\textbf{Layout Components:}
+\begin{itemize}
+    \item Site Chrome, Header, Footer, Admin Layout, Customer Layout
+\end{itemize}
+
+\noindent\textbf{Auth Components:}
+\begin{itemize}
+    \item Auth Guard, Auth Context
+\end{itemize}
+
+\subsection{Data Flow Architecture}
+
+\bigskip
+\noindent\textbf{Flow Description:}
+\begin{enumerate}
+    \item User navigates to route
+    \item Page renders component
+    \item Component calls React Query hook
+    \item Hook makes HTTP Request via Axios
+    \item API Gateway processes request
+    \item Response updates cache
+    \item Component re-renders with data
+    \item User sees updated UI
+\end{enumerate}
+
+\subsection{Authentication Flow}
+
+\bigskip
+\noindent\textbf{Auth Sequence:}
+\begin{enumerate}
+    \item User loads app
+    \item AuthContext checks for token in sessionStorage
+    \item If token exists: validate via /api/auth/me
+    \item If valid: show protected content
+    \item If invalid: show public content
+    \item On login: POST credentials $\rightarrow$ receive JWT
+    \item Store in sessionStorage and redirect
+\end{enumerate}
+
+\newpage
+
+\section{Backend Analysis}
+\label{sec:backend}
+
+\subsection{Backend Project Structure}
+
+\begin{verbatim}
+baccouche-motors-backend/
+├── apps/
+│   ├── gateway/              # API Gateway (entry point)
+│   ├── auth/                 # Authentication microservice
+│   ├── cars/                # Cars inventory microservice
+│   ├── news/                # News/Blog microservice
+│   ├── test-drives/         # Test drive scheduling
+│   ├── contacts/           # Contact form microservice
+│   ├── admin/              # Admin dashboard microservice
+│   └── baccouchemotorsapi/ # Legacy (deprecated)
+├── libs/shared/             # Shared library
+│   └── src/
+│       ├── guards/         # Auth guards
+│       ├── decorators/     # Role decorators
+│       ├── dto/           # Shared DTOs
+│       ├── events/        # Events
+│       ├── jwt/          # JWT utilities
+│       ├── filters/       # Exception filters
+│       └── constants.ts   # Enums
+├── uploads/               # File uploads
+├── scripts/             # Build scripts
+└── docs/                # OpenAPI docs
+\end{verbatim}
+
+\subsection{Docker Services}
+
+\begin{table}[h]
+\centering
+\caption{Docker Services}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Service & Port \\
+\midrule
+Gateway & 3500 \\
+Auth & 3501 \\
+Cars & 3502 \\
+News & 3503 \\
+Test Drives & 3504 \\
+Contacts & 3505 \\
+Admin & 3506 \\
+PostgreSQL & 5432/5433 \\
+RabbitMQ & 5672 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{Entities \& Database Schema}
+\label{sec:entities}
+
+\subsection{Database: PostgreSQL (Polyglot Persistence)}
+
+\begin{itemize}
+    \item baccouche\_auth - Users
+    \item baccouche\_cars - Car inventory
+    \item baccouche\_news - News articles
+    \item baccouche\_test\_drives - Test drive bookings
+    \item baccouche\_contacts - Contact form submissions
+\end{itemize}
+
+\subsection{Entity Definitions}
+
+\bigskip
+\noindent\textbf{Note: Entity relationship diagrams should be included as separate figures.}
+\begin{itemize}
+    \item \textbf{User Entity}: id, email, password, firstName, lastName, phone, address, role, createdAt, updatedAt
+    \item \textbf{Car Entity}: id, make, model, year, price, slug, image, description, specs, vin, mileage, color, fuelType, transmission, status, createdAt, updatedAt
+    \item \textbf{News Entity}: id, slug, title, excerpt, content, date, image, status, createdAt, updatedAt
+    \item \textbf{TestDrive Entity}: id, userId, carId, scheduledAt, name, phone, email, model, preferredDate, timeSlot, status, notes, createdAt, updatedAt
+    \item \textbf{Contact Entity}: id, name, email, phone, subject, message, read, createdAt
+\end{itemize}
+
+\newpage
+
+\section{API Endpoints Summary}
+\label{sec:api}
+
+\subsection{Gateway Routes}
+
+\begin{table}[h]
+\centering
+\caption{API Endpoints}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Controller & Base Path \\
+\midrule
+Auth & /api/auth \\
+Customers & /api/customers \\
+Cars & /api/cars \\
+Cars (stats) & /api/cars/stats \\
+Cars (slug) & /api/cars/slug/:slug \\
+Cars (image) & /api/cars/:id/image \\
+News & /api/news \\
+News (stats) & /api/news/stats \\
+News (slug) & /api/news/slug/:slug \\
+News (image) & /api/news/:id/image \\
+Test Drives & /api/test-drives \\
+Contacts & /api/contacts \\
+Admin & /api/admin \\
+Health & / \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{Infrastructure \& Deployment}
+\label{sec:infra}
+
+\bigskip
+\noindent\textbf{Diagram Description:}
+
+\begin{itemize}
+    \item \textbf{Load Balancer}: Nginx distributes traffic
+    \item \textbf{Frontend}: Next.js running on port 3000
+    \item \textbf{API Gateway}: NestJS Gateway on port 3500
+    \item \textbf{Microservices}: Running on ports 3501-3506
+    \item \textbf{PostgreSQL}: On port 5432
+    \item \textbf{RabbitMQ}: On port 5672
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\parbox{0.9\textwidth}{
+\textbf{Infrastructure Diagram}\\
+\begin{center}
+Nginx Load Balancer $\rightarrow$ Next.js (:3000), API Gateway (:3500) \\
+API Gateway $\rightarrow$ RabbitMQ (:5672) $\rightarrow$ Microservices (3501-3506) \\
+All Services $\rightarrow$ PostgreSQL (:5432)
+\end{center}
+}}
+\end{figure}
+
+\newpage
+
+\section{Security Features}
+\label{sec:security}
+
+\begin{table}[h]
+\centering
+\caption{Security Features}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Feature & Implementation \\
+\midrule
+JWT Authentication & Token-based with 7-day expiry \\
+Password Hashing & bcrypt \\
+Rate Limiting & Throttler (10 req/sec, 100 req/min) \\
+Role-based Access Control & GatewayRolesGuard \\
+Input Validation & class-validator DTOs \\
+Frontend Auth Guard & Route protection component \\
+Session Storage & Token in sessionStorage \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section{UML Diagrams}
+\label{sec:uml}
+
+\bigskip
+\noindent\textbf{Note: The following sections describe UML diagrams that should be created separately.}
+
+\subsection{System Architecture Diagram}
+
+\bigskip
+\noindent\textbf{Components to include:}
+\begin{itemize}
+    \item Client Layer: Web Browser, Mobile App
+    \item Frontend Layer: Next.js Server, Axios Client, React Query
+    \item API Gateway: Rate Limiter, Auth Middleware
+    \item Message Broker: RabbitMQ
+    \item Microservices: Auth, Cars, News, Test Drives, Contacts, Admin
+    \item Database: PostgreSQL
+\end{itemize}
+
+\subsection{Use Case Diagram}
+
+\bigskip
+\noindent\textbf{Actors:}
+\begin{itemize}
+    \item Guest, Customer, Staff, Admin
+\end{itemize}
+
+\noindent\textbf{Use Cases by Actor:}
+\begin{itemize}
+    \item \textbf{Guest}: View Cars, View Details, Contact, Test Drive
+    \item \textbf{Customer}: Register, Login, Profile, Book Test Drive
+    \item \textbf{Staff}: Manage Cars, News, Test Drives, Contacts
+    \item \textbf{Admin}: Dashboard, Manage Users
+\end{itemize}
+
+\subsection{Sequence Diagrams}
+
+\bigskip
+\noindent\textbf{Login Sequence:}
+\begin{enumerate}
+    \item User enters credentials
+    \item Frontend calls AuthContext.login()
+    \item API makes POST to /api/auth/login
+    \item Gateway forwards to Auth Service (RabbitMQ)
+    \item Auth Service validates against database
+    \item Returns JWT token
+    \item Stored in sessionStorage
+    \item Redirect to dashboard
+\end{enumerate}
+
+\bigskip
+\noindent\textbf{Book Test Drive Sequence:}
+\begin{enumerate}
+    \item Customer fills form
+    \item Submits to /api/test-drives
+    \item Gateway routes to Test Drive Service
+    \item Saves to database
+    \item Sends confirmation
+    \item Returns success to frontend
+\end{enumerate}
+
+\subsection{Entity Relationship Diagram}
+
+\bigskip
+\noindent\textbf{Relationships:}
+\begin{itemize}
+    \item USER 1-----0..* TEST\_DRIVE (books)
+    \item CAR 1-----0..* TEST\_DRIVE (test\_driven\_by)
+\end{itemize}
+
+\subsection{State Machine Diagrams}
+
+\bigskip
+\noindent\textbf{Test Drive Status Flow:}
+\begin{center}
+PENDING $\rightarrow$ CONFIRMED $\rightarrow$ COMPLETED \\
+PENDING $\rightarrow$ REJECTED \\
+PENDING $\rightarrow$ CANCELLED \\
+CONFIRMED $\rightarrow$ CANCELLED
+\end{center}
+
+\bigskip
+\noindent\textbf{Car Status Flow:}
+\begin{center}
+AVAILABLE $\rightarrow$ RESERVED $\rightarrow$ SOLD \\
+AVAILABLE $\rightarrow$ SOLD \\
+AVAILABLE $\rightarrow$ MAINTENANCE $\rightarrow$ AVAILABLE
+\end{center}
+
+\newpage
+
+\section{Summary}
+\label{sec:summary}
+
+\subsection{Project Summary}
+
+\begin{table}[h]
+\centering
+\caption{Project Summary}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Aspect & Backend & Frontend \\
+\midrule
+Architecture & Microservices & Next.js App Router \\
+Communication & RabbitMQ RPC & Axios \\
+Framework & NestJS v11 & Next.js 16.1.6 \\
+Language & TypeScript & TypeScript \\
+Database & PostgreSQL & N/A \\
+ORM & TypeORM & N/A \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{User Roles Summary}
+
+\begin{table}[h]
+\caption{User Roles}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Role & Access Level \\
+\midrule
+ADMIN & Full - Complete system access \\
+STAFF & Medium - Manage content and bookings \\
+CUSTOMER & Limited - Personal account access \\
+GUEST & Public - Browse and inquire \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Core Features Summary}
+
+\begin{table}[h]
+\centering
+\caption{Core Features}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Feature & Frontend Page / Backend Endpoint \\
+\midrule
+Car Catalog & /cars / /api/cars \\
+Car Details & /cars/:slug / /api/cars/slug/:slug \\
+News & /actualites / /api/news \\
+Contact Form & /contact / /api/contacts \\
+Test Drive & /test-drive / /api/test-drives \\
+Admin Dashboard & /admin/dashboard / /api/admin \\
+Customer Portal & /customer/dashboard / /api/customers \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Enums Reference}
+
+\bigskip
+\noindent\textbf{UserRole:}
+\begin{verbatim}
+enum UserRole {
+  ADMIN = 'admin',
+  STAFF = 'staff',
+  CUSTOMER = 'customer',
+}
+\end{verbatim}
+
+\bigskip
+\noindent\textbf{TestDriveStatus:}
+\begin{verbatim}
+enum TestDriveStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+  REJECTED = 'rejected',
+}
+\end{verbatim}
+
+\bigskip
+\noindent\textbf{NewsStatus:}
+\begin{verbatim}
+enum NewsStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+}
+\end{verbatim}
+
+\bigskip
+\noindent\textbf{CarStatus:}
+\begin{verbatim}
+enum CarStatus {
+  AVAILABLE = 'available',
+  SOLD = 'sold',
+  RESERVED = 'reserved',
+  MAINTENANCE = 'maintenance',
+}
+\end{verbatim}
+
+\bigskip
+\bigskip
+\noindent\textit{Report generated for Baccouche Motors Application - Full Stack Review}
+
+\end{document}
